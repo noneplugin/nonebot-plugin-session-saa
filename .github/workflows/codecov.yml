@@ -28,10 +28,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: poetry install --with adapters
+        run: poetry install
 
       - name: Run tests
-        run: poetry run pytest --cov-report xml --cov=./nonebot_plugin_session
+        run: poetry run pytest --cov-report xml --cov=./nonebot_plugin_session_saa
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
