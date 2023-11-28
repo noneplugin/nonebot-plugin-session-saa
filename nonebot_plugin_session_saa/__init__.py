@@ -20,6 +20,8 @@ __plugin_meta__ = PluginMetadata(
 
 from nonebot_plugin_saa import (
     PlatformTarget,
+    TargetDoDoChannel,
+    TargetDoDoPrivate,
     TargetFeishuGroup,
     TargetFeishuPrivate,
     TargetKaiheilaChannel,
@@ -29,6 +31,8 @@ from nonebot_plugin_saa import (
     TargetQQGuildChannel,
     TargetQQGuildDirect,
     TargetQQPrivate,
+    TargetTelegramCommon,
+    TargetTelegramForum,
 )
 from nonebot_plugin_session import Session, SessionLevel
 from nonebot_plugin_session.const import SupportedAdapter, SupportedPlatform
@@ -62,6 +66,27 @@ def get_saa_target(session: Session) -> Optional[PlatformTarget]:
             return TargetFeishuPrivate(open_id=session.id1)
         elif session.level == SessionLevel.LEVEL2 and session.id2:
             return TargetFeishuGroup(chat_id=session.id2)
+
+    elif session.platform == SupportedPlatform.telegram:
+        if session.level == SessionLevel.LEVEL1 and session.id1:
+            return TargetTelegramCommon(chat_id=int(session.id1))
+        elif session.level == SessionLevel.LEVEL2 and session.id2:
+            return TargetTelegramCommon(chat_id=int(session.id2))
+        elif session.level == SessionLevel.LEVEL3 and session.id3:
+            if session.id2:
+                return TargetTelegramForum(
+                    chat_id=int(session.id3), message_thread_id=int(session.id2)
+                )
+            else:
+                return TargetTelegramCommon(chat_id=int(session.id3))
+
+    elif session.platform == SupportedPlatform.dodo:
+        if session.level == SessionLevel.LEVEL1 and session.id3 and session.id1:
+            return TargetDoDoPrivate(
+                island_source_id=session.id3, dodo_source_id=session.id1
+            )
+        elif session.level == SessionLevel.LEVEL3 and session.id2:
+            return TargetDoDoChannel(channel_id=session.id2, dodo_source_id=session.id1)
 
     if session.bot_type == SupportedAdapter.onebot_v12:
         if session.level == SessionLevel.LEVEL1 and session.id1:
