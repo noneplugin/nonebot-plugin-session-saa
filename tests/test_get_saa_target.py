@@ -142,6 +142,93 @@ def test_target_feishu(app: App):
     assert target.chat_id == "3344"
 
 
+def test_target_telegram(app: App):
+    from nonebot_plugin_saa import TargetTelegramCommon, TargetTelegramForum
+    from nonebot_plugin_session import Session, SessionLevel
+
+    from nonebot_plugin_session_saa import get_saa_target
+
+    session = Session(
+        bot_id="2233",
+        bot_type="Telegram",
+        platform="telegram",
+        level=SessionLevel.LEVEL1,
+        id1="5566",
+        id2=None,
+        id3=None,
+    )
+    target = get_saa_target(session)
+    assert target
+    assert isinstance(target, TargetTelegramCommon)
+    assert target.chat_id == 5566
+
+    session = Session(
+        bot_id="2233",
+        bot_type="Telegram",
+        platform="telegram",
+        level=SessionLevel.LEVEL2,
+        id1="5566",
+        id2="3344",
+        id3=None,
+    )
+    target = get_saa_target(session)
+    assert target
+    assert isinstance(target, TargetTelegramCommon)
+    assert target.chat_id == 3344
+
+    session = Session(
+        bot_id="2233",
+        bot_type="Telegram",
+        platform="telegram",
+        level=SessionLevel.LEVEL3,
+        id1="5566",
+        id2="3344",
+        id3="1122",
+    )
+    target = get_saa_target(session)
+    assert target
+    assert isinstance(target, TargetTelegramForum)
+    assert target.chat_id == 1122
+    assert target.message_thread_id == 3344
+
+
+def test_target_dodo(app: App):
+    from nonebot_plugin_saa import TargetDoDoChannel, TargetDoDoPrivate
+    from nonebot_plugin_session import Session, SessionLevel
+
+    from nonebot_plugin_session_saa import get_saa_target
+
+    session = Session(
+        bot_id="2233",
+        bot_type="DoDo",
+        platform="dodo",
+        level=SessionLevel.LEVEL1,
+        id1="5566",
+        id2=None,
+        id3="3344",
+    )
+    target = get_saa_target(session)
+    assert target
+    assert isinstance(target, TargetDoDoPrivate)
+    assert target.island_source_id == "3344"
+    assert target.dodo_source_id == "5566"
+
+    session = Session(
+        bot_id="2233",
+        bot_type="DoDo",
+        platform="dodo",
+        level=SessionLevel.LEVEL3,
+        id1="5566",
+        id2="3344",
+        id3="1122",
+    )
+    target = get_saa_target(session)
+    assert target
+    assert isinstance(target, TargetDoDoChannel)
+    assert target.channel_id == "3344"
+    assert target.dodo_source_id == "5566"
+
+
 def test_target_onebot_v12_unknown(app: App):
     from nonebot_plugin_saa import TargetOB12Unknow
     from nonebot_plugin_session import Session, SessionLevel
