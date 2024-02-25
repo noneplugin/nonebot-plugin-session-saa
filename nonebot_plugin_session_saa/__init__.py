@@ -28,9 +28,11 @@ from nonebot_plugin_saa import (
     TargetKaiheilaPrivate,
     TargetOB12Unknow,
     TargetQQGroup,
+    TargetQQGroupOpenId,
     TargetQQGuildChannel,
     TargetQQGuildDirect,
     TargetQQPrivate,
+    TargetQQPrivateOpenId,
     TargetTelegramCommon,
     TargetTelegramForum,
 )
@@ -41,9 +43,19 @@ from nonebot_plugin_session.const import SupportedAdapter, SupportedPlatform
 def get_saa_target(session: Session) -> Optional[PlatformTarget]:
     if session.platform == SupportedPlatform.qq:
         if session.level == SessionLevel.LEVEL1 and session.id1:
-            return TargetQQPrivate(user_id=int(session.id1))
+            if session.id1.isdigit():
+                return TargetQQPrivate(user_id=int(session.id1))
+            else:
+                return TargetQQPrivateOpenId(
+                    bot_id=session.bot_id, user_openid=session.id1
+                )
         elif session.level == SessionLevel.LEVEL2 and session.id2:
-            return TargetQQGroup(group_id=int(session.id2))
+            if session.id2.isdigit():
+                return TargetQQGroup(group_id=int(session.id2))
+            else:
+                return TargetQQGroupOpenId(
+                    bot_id=session.bot_id, group_openid=session.id2
+                )
 
     elif session.platform == SupportedPlatform.qqguild:
         if session.level == SessionLevel.LEVEL1:
